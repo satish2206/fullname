@@ -1,60 +1,76 @@
 import React, { useState } from "react";
 
+
+const Tooltip = ({ show, message }) => {
+  return show ? <div className="tooltip">{message}</div> : null;
+};
+
 export default function App() {
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
-  const [fullname, setFullname] = useState("");
-  const [firstNameError, setFirstNameError] = useState("");
-  const [lastNameError, setLastNameError] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [firstNameError, setFirstNameError] = useState(false);
+  const [lastNameError, setLastNameError] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
     if (firstname.trim() === "") {
-      setFirstNameError("Please fill out the First Name field");
+      setFirstNameError(true);
     } else {
-      setFirstNameError("");
+      setFirstNameError(false);
     }
 
     if (lastname.trim() === "") {
-      setLastNameError("Please fill out the Last Name field");
+      setLastNameError(true);
     } else {
-      setLastNameError("");
+      setLastNameError(false);
     }
 
     if (firstname.trim() !== "" && lastname.trim() !== "") {
       const fullName = `${firstname} ${lastname}`;
-      setFullname(fullName); // Update state with full name
+      setFullName(fullName); // Update state with full name
       console.log("Submitted:", fullName);
     }
   };
 
+  const handleFirstNameChange = (e) => {
+    setFirstName(e.target.value);
+    setFullName(`${e.target.value} ${lastname}`);
+    setFirstNameError(false); // Clear error when user types in the field
+  };
+
+  const handleLastNameChange = (e) => {
+    setLastName(e.target.value);
+    setFullName(`${firstname} ${e.target.value}`);
+    setLastNameError(false); // Clear error when user types in the field
+  };
+
   return (
     <div>
-      <h1>Full Name Display</h1>
       <form onSubmit={handleSubmit}>
         <label>
           First Name:
           <input
             type="text"
             value={firstname}
-            onChange={(e) => setFirstName(e.target.value)}
+            onChange={handleFirstNameChange}
           />
+          <Tooltip show={firstNameError} message="Please fill out the First Name field" />
         </label>
         <br />
-        {firstNameError && <p style={{ color: "red" }}>{firstNameError}</p>}
         <label>
           Last Name:
           <input
             type="text"
             value={lastname}
-            onChange={(e) => setLastName(e.target.value)}
+            onChange={handleLastNameChange}
           />
+          <Tooltip show={lastNameError} message="Please fill out the Last Name field" />
         </label>
         <br />
-        {lastNameError && <p style={{ color: "red" }}>{lastNameError}</p>}
+        <p>Full Name: {fullName}</p>
         <button type="submit">Submit</button>
-        <br />
-        <p>Full Name: {fullname}</p>
       </form>
     </div>
   );
